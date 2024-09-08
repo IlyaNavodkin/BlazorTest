@@ -1,0 +1,17 @@
+﻿@page "/login"
+
+<PageTitle>Login</PageTitle>
+
+
+<MudPaper Class="pa-4 mx-auto mt-10" MaxWidth="400px" Elevation="4">
+    <MudText Typo="Typo.h4" GutterBottom="true">Login</MudText>
+
+    <MudForm>
+        <MudTextField @bind-Value="LoginPageViewModel.Login" Label="Логин" Required="true" Immediate="true" Class="mb-4" />
+        <MudTextField @bind-Value="LoginPageViewModel.Password" Label="Пароль" Required="true" Immediate="true" Class="mb-4" InputType="InputType.Password" />
+
+        <MudButton Variant="Variant.Filled" Color="Color.Primary" OnClick="@(async () => await SendForm())">Войти</MudButton>
+    </MudForm>
+</MudPaper>
+
+

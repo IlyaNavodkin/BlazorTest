@@ -1,0 +1,31 @@
+﻿@page "/user"
+@using Microsoft.AspNetCore.Authorization
+@using Microsoft.AspNetCore.Components.Authorization
+
+@attribute [Authorize]
+
+<h3>U are user!</h3>
+
+
+@code {
+    [Inject]
+    public AuthenticationStateProvider AuthenticationStateProvider { get; set; }
+
+
+    [Inject]
+    public ISnackbar _snackbar { get; set; }
+
+    protected override async Task OnInitializedAsync()
+    {
+        var authState = await AuthenticationStateProvider.GetAuthenticationStateAsync();
+        var user = authState.User;
+
+        if (!user.Identity.IsAuthenticated)
+        {
+            
+            _snackbar.Add("Not authenticated", Severity.Error);
+        }
+
+        await base.OnInitializedAsync();
+    }
+}
