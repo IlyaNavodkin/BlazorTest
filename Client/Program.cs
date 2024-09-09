@@ -1,32 +1,28 @@
+using Client.Auth;
 using Client.Components;
-using Microsoft.AspNetCore.Authentication.Cookies;
+using Microsoft.AspNetCore.Components.Authorization;
 using MudBlazor.Services;
 
 var builder = WebApplication.CreateBuilder(args);
 
-builder.Services.AddCascadingAuthenticationState();
-
-builder
-    .Services.AddAuthentication(CookieAuthenticationDefaults.AuthenticationScheme)
-    .AddCookie(options =>
-    {
-        options.LoginPath = "/login";
-        options.LogoutPath = "/logout";
-        options.AccessDeniedPath = "/login";
-
-        options.ExpireTimeSpan = TimeSpan.FromMinutes(1);
-        options.Cookie.SameSite = SameSiteMode.Lax;
-        options.Cookie.SecurePolicy = CookieSecurePolicy.Always;
-    });
-
+// Регистрация сервисов
 builder.Services.AddAuthorizationCore();
 
-builder.Services.AddRazorComponents().AddInteractiveServerComponents();
+builder.Services.AddScoped<HttpClient>();
+builder.Services.AddScoped<AuthService>();
+builder.Services.AddScoped<AuthenticationStateProvider, CustomAuthenticationStateProvider>();
 
+// Добавление поддержки аутентификации на стороне клиента
+
+// Регистрация MudBlazor
 builder.Services.AddMudServices();
+
+// Настройка компонентов
+builder.Services.AddRazorComponents().AddInteractiveServerComponents();
 
 var app = builder.Build();
 
+// Настройка обработки исключений
 if (!app.Environment.IsDevelopment())
 {
     app.UseExceptionHandler("/Error", createScopeForErrors: true);
@@ -34,11 +30,10 @@ if (!app.Environment.IsDevelopment())
 }
 
 app.UseHttpsRedirection();
-
 app.UseStaticFiles();
 app.UseAntiforgery();
-app.UseAuthentication().UseAuthorization();
 
+// Карта маршрутизации компонентов Razor
 app.MapRazorComponents<App>().AddInteractiveServerRenderMode();
 
 app.Run();

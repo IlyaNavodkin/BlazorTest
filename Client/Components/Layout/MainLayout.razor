@@ -1,4 +1,8 @@
-﻿@inherits LayoutComponentBase
+﻿@using Client.Auth
+@using Microsoft.AspNetCore.Components.Authorization
+@inherits LayoutComponentBase
+@inject AuthService AuthService
+@inject AuthenticationStateProvider AuthStateProvider
 
 <MudLayout>
     <MudAppBar Elevation="1">
@@ -6,6 +10,10 @@
         <MudText Typo="Typo.h5" Class="ml-3">Application</MudText>
         <MudSpacer />
         <MudIconButton Icon="@Icons.Material.Filled.MoreVert" Color="Color.Inherit" Edge="Edge.End" />
+
+        <MudButton Variant="Variant.Text" Color="Color.Inherit" OnClick="Login" Class="ml-3">Login</MudButton>
+        <MudButton Variant="Variant.Text" Color="Color.Inherit" OnClick="Logout" Class="ml-3">Logout</MudButton>
+
     </MudAppBar>
     <MudDrawer @bind-Open="_drawerOpen" ClipMode="DrawerClipMode.Always" Elevation="2">
         <NavMenu />
@@ -21,5 +29,24 @@
     private void DrawerToggle()
     {
         _drawerOpen = !_drawerOpen;
+    }
+
+    private async Task Login()
+    {
+        // Вход пользователя
+        await AuthService.LoginAsync("username", "password");
+
+        var customStateProvider = (CustomAuthenticationStateProvider)AuthStateProvider;
+        await customStateProvider.NotifyUserAuthentication();
+    }
+
+    private async Task Logout()
+    {
+        // Выход пользователя
+        await AuthService.LogoutAsync();
+
+        var customStateProvider = (CustomAuthenticationStateProvider)AuthStateProvider;
+
+        customStateProvider.NotifyUserLogout();
     }
 }
